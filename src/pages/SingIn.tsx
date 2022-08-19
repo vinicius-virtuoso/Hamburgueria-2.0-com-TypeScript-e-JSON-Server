@@ -16,23 +16,30 @@ import {
   Heading,
   Image,
   Text,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { container, item } from "../styles/animate";
+import { useAuth } from "../contexts/AuthContext";
 
 const schema = yup.object().shape({
-  name: yup.string().trim().required("Digite seu nome"),
+  email: yup
+    .string()
+    .email("Digite um email válido.")
+    .required("Email obrigatório"),
   password: yup.string().required("Digite sua senha."),
 });
 
 interface LoginType {
-  name: string;
+  email: string;
   password: string;
 }
 
 export const SingIn = () => {
   const [loading, setLoading] = useState(false);
+  const { singIn } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
 
   const {
     register,
@@ -42,9 +49,21 @@ export const SingIn = () => {
     resolver: yupResolver(schema),
   });
 
-  const submitFormLogin = ({ name, password }: LoginType) => {
+  const submitFormLogin = ({ email, password }: LoginType) => {
     setLoading(true);
-    console.log({ name, password });
+    singIn({ email, password })
+      .then((_) => setLoading(false))
+      .catch((err) => {
+        setLoading(false);
+        toast({
+          position: "top",
+          title: "Ocorreu um error",
+          description: "Verifique se as credencias então corretas",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
   };
 
   return (
@@ -54,12 +73,12 @@ export const SingIn = () => {
         display="flex"
         maxW="container.lg"
         padding={[4, 6, 7, 0]}
-        alignItems={["flex-end", "flex-end", "flex-end", "center"]}
+        alignItems={["center", "center", "center", "center"]}
         gap={[6, 6, 6, 24]}
         flexDir={["column-reverse", "column-reverse", "column-reverse", "row"]}
         justifyContent={["flex-end", "flex-end", "flex-end", "space-between"]}
       >
-        <Box w={["100%", "100%", "100%", "50%"]}>
+        <Box w={["auto", "auto", "auto", "50%"]}>
           <Box
             as={motion.form}
             onSubmit={handleSubmit(submitFormLogin)}
@@ -87,10 +106,10 @@ export const SingIn = () => {
             </Flex>
             <VStack mt={6} spacing={5}>
               <Input
-                type="text"
-                placeholder="Nome*"
-                {...register("name")}
-                error={errors.name}
+                type="email"
+                placeholder="Email*"
+                {...register("email")}
+                error={errors.email}
                 variants={item}
               />
 
@@ -148,7 +167,7 @@ export const SingIn = () => {
           mt={["2rem", "2rem", "2rem", "1rem"]}
           flexDir="column"
           gap={6}
-          w={["100%", "100%", "100%", "50%"]}
+          w={["auto", "auto", "auto", "50%"]}
           as={motion.div}
           variants={container}
           initial="hidden"
@@ -166,7 +185,7 @@ export const SingIn = () => {
             rounded={4}
             border="1px"
             borderColor="gray.300"
-            maxWidth={["100%", "100%", "100%", "450px"]}
+            maxWidth={["350px", "350px", "400px", "450px"]}
             shadow="md"
           >
             <Box

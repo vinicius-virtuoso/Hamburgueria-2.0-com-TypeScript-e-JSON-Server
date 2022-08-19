@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { RiShoppingBag3Line } from "react-icons/ri";
-import { Link } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -17,9 +17,12 @@ import {
   Heading,
   Image,
   Text,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { container, item } from "../styles/animate";
+import { useAuth } from "../contexts/AuthContext";
+import { api } from "../services/api";
 
 const schema = yup.object().shape({
   name: yup.string().trim().required("Por favor digite seu nome"),
@@ -43,6 +46,8 @@ interface LoginType {
 
 export const SingUp = () => {
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const toast = useToast();
 
   const {
     register,
@@ -54,7 +59,31 @@ export const SingUp = () => {
 
   const submitFormLogin = ({ name, email, password }: LoginType) => {
     setLoading(true);
-    console.log({ name, email, password });
+    api
+      .post("/register", { name, email, password })
+      .then((_) => {
+        setLoading(false);
+        toast({
+          position: "top",
+          title: "Conta criada.",
+          description: "Sua conta foi criada com sucesso",
+          status: "success",
+          duration: 2000,
+          isClosable: true,
+        });
+        navigate("/catalog");
+      })
+      .catch((err) => {
+        setLoading(false);
+        toast({
+          position: "top",
+          title: "Email já existe",
+          description: "Por favor tente outro email ou faça o login",
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      });
   };
 
   return (
@@ -95,7 +124,7 @@ export const SingUp = () => {
             rounded={4}
             border="1px"
             borderColor="gray.300"
-            maxWidth={["100%", "100%", "100%", "450px"]}
+            maxWidth={["350px", "350px", "400px", "450px"]}
             shadow="md"
           >
             <Box

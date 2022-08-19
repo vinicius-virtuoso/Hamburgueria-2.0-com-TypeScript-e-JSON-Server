@@ -1,17 +1,16 @@
 import {
-  Box,
-  Button,
   Heading,
   Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
-  ModalFooter,
   ModalHeader,
   ModalOverlay,
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { useState } from "react";
+import { useCart } from "../../contexts/CartContext";
 
 interface CartProps {
   isOpen: boolean;
@@ -20,6 +19,9 @@ interface CartProps {
 }
 
 export const Cart = ({ isOpen, onClose }: CartProps) => {
+  const { cart } = useCart();
+  const [cartCount, setCartCount] = useState(0);
+
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose}>

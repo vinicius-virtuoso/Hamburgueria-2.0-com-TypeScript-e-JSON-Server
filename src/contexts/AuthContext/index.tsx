@@ -4,28 +4,29 @@ import {
   useCallback,
   useState,
   ReactNode,
+  useEffect,
 } from "react";
-// import { api } from "../services/api";
+import { useNavigate } from "react-router-dom";
+import { api } from "../../services/api";
+import jwt_decode from "jwt-decode";
 
 interface ContextProps {
-  user: User;
   accessToken: string;
   singIn: (credentials: SingInCredentials) => Promise<void>;
+  logout: () => void;
+  userId: number;
 }
 
 interface ChildrenProp {
   children: ReactNode;
 }
 
-interface User {
-  email: string;
-  id: string;
-  name: string;
-}
-
 interface AuthState {
   accessToken: string;
-  user: User;
+  user: {
+    id: number;
+    email: string;
+  };
 }
 
 interface SingInCredentials {
@@ -44,28 +45,42 @@ const useAuth = () => {
 };
 
 const AuthProvider = ({ children }: ChildrenProp) => {
+  const [userId, setUserId] = useState<number>(0);
   const [data, setData] = useState<AuthState>(() => {
     const accessToken = localStorage.getItem("@hamburgueria:accessToken");
     const user = localStorage.getItem("@hamburgueria:user");
 
     if (accessToken && user) {
-      return { accessToken, user: JSON.parse(user) };
+      return { accessToken, user: { ...JSON.parse(user) } };
     }
-
     return {} as AuthState;
   });
 
+  useEffect(() => {
+    if (data.accessToken) {
+      setUserId(data.user.id);
+    }
+  }, [data]);
+
+  const navigate = useNavigate();
+
   const singIn = useCallback(async ({ email, password }: SingInCredentials) => {
-    // const response = await api.post("/login", { email, password });
-    // const { accessToken, user } = response.data;
-    // localStorage.setItem("@Doit:accessToken", accessToken);
-    // localStorage.setItem("@Doit:user", JSON.stringify(user));
-    // setData({ accessToken, user });
+    const response = await api.post("/login", { email, password });
+    const { accessToken, user } = response.data;
+    localStorage.setItem("@hamburgueria:accessToken", accessToken);
+    localStorage.setItem("@hamburgueria:user", JSON.stringify(user));
+    setData({ accessToken, user });
+  }, []);
+
+  const logout = useCallback(async () => {
+    localStorage.clear();
+    setData({} as AuthState);
+    navigate("/login");
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ singIn, accessToken: data.accessToken, user: data.user }}
+      value={{ singIn, logout, accessToken: data.accessToken, userId }}
     >
       {children}
     </AuthContext.Provider>

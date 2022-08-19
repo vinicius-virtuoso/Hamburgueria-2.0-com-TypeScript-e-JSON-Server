@@ -8,25 +8,50 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import logoImg from "../../assets/logo.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { InputSearch } from "../InputSearch";
 
 import searchIcon from "../../assets/search-icon.svg";
 import cartIcon from "../../assets/cart-icon.svg";
 import logoutIcon from "../../assets/logout-icon.svg";
 import { Cart } from "../Cart";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
+import { motion } from "framer-motion";
+import { container, item } from "../../styles/animate";
+import { useCart } from "../../contexts/CartContext";
 
 export const Header = () => {
   const [isSearch, setIsSearch] = useState(false);
+  const { logout } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { cart, renderCart } = useCart();
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    if (cart?.length > 0) {
+      setCartCount(cart.reduce((acc, att) => acc + att.quantity, 0));
+    }
+  }, [cart]);
 
   return (
-    <Box bg="gray.100">
+    <Box bg="gray.100" as="header" minH="80px">
       <Container maxW="container.xl" py={[4]}>
-        <Flex alignItems="center" justifyContent="space-between">
+        <Flex
+          alignItems="center"
+          justifyContent="space-between"
+          as={motion.div}
+          variants={container}
+          initial="hidden"
+          animate="visible"
+        >
           {!isSearch ? (
             <>
-              <Box w={["140px", "150px", "160px", "240px"]}>
+              <Box
+                w={["140px", "150px", "160px", "240px"]}
+                as={motion.div}
+                variants={item}
+              >
                 <Image src={logoImg} maxW="100%" />
               </Box>
 
@@ -40,6 +65,8 @@ export const Header = () => {
                   justifyContent="center"
                   p={0}
                   onClick={() => setIsSearch(!isSearch)}
+                  as={motion.button}
+                  variants={item}
                 >
                   <Image src={searchIcon} alt="search" />
                 </Button>
@@ -57,6 +84,8 @@ export const Header = () => {
                   alignItems="center"
                   justifyContent="center"
                   onClick={onOpen}
+                  as={motion.button}
+                  variants={item}
                 >
                   <Text
                     position="absolute"
@@ -71,7 +100,7 @@ export const Header = () => {
                     alignItems="center"
                     justifyContent="center"
                   >
-                    0
+                    {cartCount > 99 ? 99 + "+" : cartCount}
                   </Text>
                   <Image src={cartIcon} alt="cart" />
                 </Button>
@@ -83,6 +112,9 @@ export const Header = () => {
                   display="flex"
                   alignItems="center"
                   justifyContent="center"
+                  onClick={logout}
+                  as={motion.button}
+                  variants={item}
                 >
                   <Image src={logoutIcon} alt="logout" />
                 </Button>
