@@ -53,7 +53,7 @@ export const SingIn = () => {
     setLoading(true);
     singIn({ email, password })
       .then((_) => setLoading(false))
-      .catch((err) => {
+      .catch((_) => {
         setLoading(false);
         toast({
           position: "top",

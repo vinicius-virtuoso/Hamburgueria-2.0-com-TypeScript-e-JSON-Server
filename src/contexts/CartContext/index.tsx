@@ -1,7 +1,6 @@
 import {
   createContext,
   ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -14,6 +13,8 @@ interface ContextProps {
   renderCart: () => void;
   addOnCart: (product: CartType) => void;
   quantProduct: (product: CartType, quantityProduct: number) => void;
+  removeOnCart: (productId: number) => void;
+  removeAllCart: () => void;
 }
 
 interface CartType {
@@ -34,8 +35,6 @@ const CartContext = createContext<ContextProps>({} as ContextProps);
 const CartProvider = ({ children }: ChildrenProp) => {
   const { accessToken, userId } = useAuth();
   const [cart, setCart] = useState<CartType[]>([]);
-
-  console.log(userId);
 
   useEffect(() => {
     if (userId) {
@@ -97,8 +96,44 @@ const CartProvider = ({ children }: ChildrenProp) => {
     }
   };
 
+  const removeOnCart = (productId: number) => {
+    if (accessToken) {
+      api
+        .delete(`/carts/${productId}`, {
+          headers: { Authorization: "Bearer " + accessToken },
+        })
+        .then((_) => {
+          renderCart();
+        });
+    }
+  };
+
+  const removeAllCart = () => {
+    if (accessToken) {
+      cart.forEach((product) => {
+        api
+          .delete(`/carts/${product.id}`, {
+            headers: { Authorization: "Bearer " + accessToken },
+          })
+          .then((_) => {
+            console.log("product removed" + product.title + " from cart");
+          });
+      });
+      renderCart();
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ cart, renderCart, addOnCart, quantProduct }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        renderCart,
+        addOnCart,
+        quantProduct,
+        removeOnCart,
+        removeAllCart,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

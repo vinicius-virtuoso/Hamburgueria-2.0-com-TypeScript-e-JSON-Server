@@ -44,6 +44,7 @@ export const Product = ({ product }: ProductType) => {
       onMouseEnter={hoverMouse}
       onMouseLeave={leaveMouse}
       h="100%"
+      overflow="hidden"
     >
       <Flex
         bgColor="gray.200"

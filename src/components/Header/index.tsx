@@ -25,12 +25,12 @@ export const Header = () => {
   const [isSearch, setIsSearch] = useState(false);
   const { logout } = useAuth();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { cart, renderCart } = useCart();
+  const { cart } = useCart();
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
-    if (cart?.length > 0) {
-      setCartCount(cart.reduce((acc, att) => acc + att.quantity, 0));
+    if (cart) {
+      setCartCount(cart?.reduce((acc, att) => acc + att.quantity, 0));
     }
   }, [cart]);
 

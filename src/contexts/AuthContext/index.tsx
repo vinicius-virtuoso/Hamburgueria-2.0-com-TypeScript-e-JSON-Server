@@ -8,7 +8,6 @@ import {
 } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services/api";
-import jwt_decode from "jwt-decode";
 
 interface ContextProps {
   accessToken: string;

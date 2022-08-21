@@ -9,6 +9,7 @@ import { TbSearch } from "react-icons/tb";
 import { Input } from "../Form/Input";
 import { motion } from "framer-motion";
 import { item } from "../../styles/animate";
+import { useProducts } from "../../contexts/ProductsContext";
 
 interface SearchProps extends InputProps {
   placeholder?: string;
@@ -22,6 +23,8 @@ export const InputSearch = ({
   display,
   setIsSearch,
 }: SearchProps) => {
+  const { getFilteredProducts } = useProducts();
+
   return (
     <InputGroup
       size={["lg", "lg", "lg", "md"]}
@@ -41,6 +44,7 @@ export const InputSearch = ({
         autoFocus
         _placeholder={{ opacity: 0.4 }}
         size="lg"
+        onChange={(e) => getFilteredProducts(e.target.value)}
       />
       <InputRightElement width="4.5rem" h="100%" pointerEvents="none">
         <Button

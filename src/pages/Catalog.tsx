@@ -3,12 +3,11 @@ import { useEffect } from "react";
 import { Header } from "../components/Header";
 import { Product } from "../components/Product";
 import { SkeletonComponent } from "../components/SkeletonComponent";
-import { useCart } from "../contexts/CartContext";
-
 import { useProducts } from "../contexts/ProductsContext";
 
 export const Catalog = () => {
-  const { products, productsLoading, getProducts } = useProducts();
+  const { products, productsLoading, getProducts, productsFiltered } =
+    useProducts();
 
   useEffect(() => {
     getProducts();
@@ -32,13 +31,27 @@ export const Catalog = () => {
           gridTemplateRows={["1fr", "1fr", "1fr", "1fr", "repeat(2,1fr)"]}
           justifyItems="center"
         >
-          {!productsLoading
-            ? products.map((product) => (
-                <Product key={product.id} product={product} />
-              ))
-            : [1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                <SkeletonComponent key={num} />
-              ))}
+          {!productsLoading ? (
+            <>
+              {productsFiltered.length > 0 ? (
+                <>
+                  {productsFiltered.map((product) => (
+                    <Product key={product.id} product={product} />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {products.map((product) => (
+                    <Product key={product.id} product={product} />
+                  ))}
+                </>
+              )}
+            </>
+          ) : (
+            [1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+              <SkeletonComponent key={num} />
+            ))
+          )}
         </Grid>
       </Container>
     </Box>

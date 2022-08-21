@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { RiShoppingBag3Line } from "react-icons/ri";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -13,7 +13,6 @@ import {
   Button,
   Container,
   Flex,
-  Grid,
   Heading,
   Image,
   Text,
@@ -21,7 +20,7 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { container, item } from "../styles/animate";
-import { useAuth } from "../contexts/AuthContext";
+
 import { api } from "../services/api";
 
 const schema = yup.object().shape({
@@ -73,7 +72,7 @@ export const SingUp = () => {
         });
         navigate("/catalog");
       })
-      .catch((err) => {
+      .catch((_) => {
         setLoading(false);
         toast({
           position: "top",
