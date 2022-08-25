@@ -1,6 +1,6 @@
 import { useToast } from "@chakra-ui/react";
 import { createContext, ReactNode, useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { api } from "../../services/api";
 import { useAuth } from "../AuthContext";
 
@@ -33,13 +33,12 @@ const ProductsProvider = ({ children }: ChildrenProp) => {
   const [productsFiltered, setProductsFiltered] = useState<ProductsType[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
   const toast = useToast();
-  const navigate = useNavigate();
 
   function getProducts() {
     if (accessToken) {
       setProductsLoading(true);
       api
-        .get("/products", {
+        .get("/catalog", {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
